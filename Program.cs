@@ -19,7 +19,7 @@ namespace Fizzbuzz
             // FizzBuzzer.GoParallel(50, plist);
             // FizzBuzzer.GoParallelSorted(50, plist);
             // FizzBuzzer.GoTasks(50, plist);
-            FizzBuzzer.GoTasksSorted(50, plist);
+            // FizzBuzzer.GoTasksSorted(50, plist);
 
 
             Console.ReadLine();
