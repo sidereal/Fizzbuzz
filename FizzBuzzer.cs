@@ -75,35 +75,11 @@ namespace Fizzbuzz
             }
         }
 
-        public static void GoParallel(int count, List<FizzBuzzParameters> parametersList)
+        
+
+        public static void GoParallel(int count, List<FizzBuzzParameters> parametersList, bool sorted = false)
         {
-            if (count < 0) 
-            {
-                Console.WriteLine("count must be > 0");
-                return;
-            }
-            var countList = Enumerable.Range(1, count).ToList();
-            ConcurrentBag<string> results = new ConcurrentBag<string>();
-
-            Parallel.ForEach<int>(countList, (n) =>
-            {
-                string output = "";
-                foreach (var pl in parametersList)
-                {
-                    if (n % pl.Number == 0) output += pl.Text;
-                }
-                results.Add(output == "" ? n.ToString() : output);
-            });
-
-            foreach (var item in results)
-            {
-                Console.WriteLine(item);
-            }
-        }
-
-        public static void GoParallelSorted(int count, List<FizzBuzzParameters> parametersList)
-        {
-            if (count < 0) 
+            if (count <= 0) 
             {
                 Console.WriteLine("count must be > 0");
                 return;
@@ -120,47 +96,20 @@ namespace Fizzbuzz
                 }
                 results.Add(new FizBuzzResults { Number = n, Text = output });
             });
-            var sortedList = results.OrderBy(r => r.Number).ToList();
-            foreach (var item in sortedList)
+
+            var resultsList = results.ToList();
+            if (sorted) resultsList =  resultsList.OrderBy(r => r.Number).ToList();
+            
+            foreach (var item in resultsList)
             {
                 Console.WriteLine(string.IsNullOrEmpty(item.Text) ? item.Number.ToString() : item.Text);
             }
         }
 
-        public static void GoTasks(int count, List<FizzBuzzParameters> parametersList)
-        {
-            if (count < 0) 
-            {
-                Console.WriteLine("count must be > 0");
-                return;
-            }
-            var countList = Enumerable.Range(1, count).ToList();
-            ConcurrentBag<string> results = new ConcurrentBag<string>();
-            List<Task> tasks = new List<Task>();
 
-            foreach (var number in countList)
-            {
-                tasks.Add(Task.Run(() =>
-                {
-                    string output = "";
-                    foreach (var pl in parametersList)
-                    {
-                        if (number % pl.Number == 0) output += pl.Text;
-                    }
-                    results.Add(output == "" ? number.ToString() : output);
-                }
-                ));
-            }
-            Task.WaitAll(tasks.ToArray());
-            foreach (var item in results)
-            {
-                Console.WriteLine(item);
-            }
-        }
-
-        public static void GoTasksSorted(int count, List<FizzBuzzParameters> parametersList)
+        public static void GoTasks(int count, List<FizzBuzzParameters> parametersList, bool sorted = false)
         {
-            if (count < 0) 
+            if (count <= 0) 
             {
                 Console.WriteLine("count must be > 0");
                 return;
@@ -183,8 +132,11 @@ namespace Fizzbuzz
                 ));
             }
             Task.WaitAll(tasks.ToArray());
-            var sortedList = results.OrderBy(r => r.Number).ToList();
-            foreach (var item in sortedList)
+
+            var resultsList = results.ToList();
+            if (sorted) resultsList = resultsList.OrderBy(r => r.Number).ToList();
+
+            foreach (var item in resultsList)
             {
                 Console.WriteLine(string.IsNullOrEmpty(item.Text) ? item.Number.ToString() : item.Text);
             }
