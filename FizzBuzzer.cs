@@ -11,6 +11,12 @@ namespace Fizzbuzz
     static class FizzBuzzer
     {
 
+        public static event EventHandler<string> FizzBuzzing;
+
+
+        /// <summary>
+        /// Traditional fizzbuzz
+        /// </summary>
         public static void Go()
         {
             for (int i = 1; i <= 100; i++)
@@ -22,14 +28,15 @@ namespace Fizzbuzz
                 Console.WriteLine(output == "" ? i.ToString() : output);
             }
         }
-
+        
+        /// <summary>
+        /// Passing in a parameter
+        /// </summary>
+        /// <param name="count"></param>
         public static void Go(int count)
         {
-            if (count < 0) 
-            {
-                Console.WriteLine("count must be > 0");
-                return;
-            }
+            if (!CheckCount(count)) return;
+
             for (int i = 1; i <= count; i++)
             {
                 string output = "";
@@ -40,13 +47,17 @@ namespace Fizzbuzz
             }
         }
 
+
+        /// <summary>
+        /// Passing in more customisation options
+        /// </summary>
+        /// <param name="count"></param>
+        /// <param name="fizz"></param>
+        /// <param name="buzz"></param>
         public static void Go(int count, string fizz = "Fizz", string buzz = "Buzz")
         {
-            if (count < 0) 
-            {
-                Console.WriteLine("count must be > 0");
-                return;
-            }
+            if (!CheckCount(count)) return;
+
             for (int i = 1; i <= count; i++)
             {
                 string output = "";
@@ -57,13 +68,17 @@ namespace Fizzbuzz
             }
         }
 
+
+        /// <summary>
+        /// passing in our customisation as 'complex' class objects
+        /// </summary>
+        /// <param name="count"></param>
+        /// <param name="parametersList"></param>
         public static void Go(int count, List<FizzBuzzParameters> parametersList)
         {
-            if (count < 0) 
-            {
-                Console.WriteLine("count must be > 0");
-                return;
-            }
+            if (!CheckCount(count)) return;
+            if (parametersList is null) return;
+
             for (int i = 1; i <= count; i++)
             {
                 string output = "";
@@ -75,15 +90,34 @@ namespace Fizzbuzz
             }
         }
 
-        
+        /// <summary>
+        /// Firing an event with our result
+        /// </summary>
+        public static void GoEvent()
+        {
+            for (int i = 1; i <= 100; i++)
+            {
+                string output = "";
+                if (i % 3 == 0) output += "Fizz";
+                if (i % 5 == 0) output += "Buzz";
 
+                FizzBuzzing(null, output == "" ? i.ToString() : output);
+            }
+        }
+
+        /// <summary>
+        /// using Parallel.ForEach to parallelise the work
+        /// with optional sorting of the results
+        /// </summary>
+        /// <param name="count"></param>
+        /// <param name="parametersList"></param>
+        /// <param name="sorted"></param>
         public static void GoParallel(int count, List<FizzBuzzParameters> parametersList, bool sorted = false)
         {
-            if (count <= 0) 
-            {
-                Console.WriteLine("count must be > 0");
-                return;
-            }
+            if (!CheckCount(count)) return;
+            if (parametersList is null) return;
+            
+
             var countList = Enumerable.Range(1, count).ToList();
             ConcurrentBag<FizBuzzResults> results = new ConcurrentBag<FizBuzzResults>();
 
@@ -106,14 +140,18 @@ namespace Fizzbuzz
             }
         }
 
-
+        /// <summary>
+        /// using Task to parallelise the work
+        /// with optional sorting of the results
+        /// </summary>
+        /// <param name="count"></param>
+        /// <param name="parametersList"></param>
+        /// <param name="sorted"></param>
         public static void GoTasks(int count, List<FizzBuzzParameters> parametersList, bool sorted = false)
         {
-            if (count <= 0) 
-            {
-                Console.WriteLine("count must be > 0");
-                return;
-            }
+            if (!CheckCount(count)) return;
+            if (parametersList is null) return;
+
             var countList = Enumerable.Range(1, count).ToList();
             ConcurrentBag<FizBuzzResults> results = new ConcurrentBag<FizBuzzResults>();
             List<Task> tasks = new List<Task>();
@@ -140,6 +178,21 @@ namespace Fizzbuzz
             {
                 Console.WriteLine(string.IsNullOrEmpty(item.Text) ? item.Number.ToString() : item.Text);
             }
+        }
+
+        /// <summary>
+        /// sanity checker for the count input
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        static bool CheckCount(int count)
+        {
+            if (count <= 0)
+            {
+                Console.WriteLine("count must be > 0");
+                return false;
+            }
+            return true;
         }
 
     }
